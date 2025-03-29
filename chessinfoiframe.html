@@ -5,16 +5,36 @@
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
     <title>Contenido del iframe</title>
     <style type="text/css">
+      @import url('https://fonts.googleapis.com/css2?family=Press+Start+2P&display=swap');
+
       body {
         background: transparent;
         color: white;
-        font-family: Arial, sans-serif;
+        font-family: 'Press Start 2P', sans-serif;
         margin: 0; /* Quitar márgenes */
       }
     </style>
   </head>
   <body>
-    <h1>Este es un contenido dentro del iframe</h1>
-    <p>Este es el contenido de un iframe sin bordes ni fondo.</p>
+  <p id="chessInfo"></p>
+
   </body>
+  <script>
+  document.addEventListener("DOMContentLoaded", function() {
+    const today = new Date();
+    const year = today.getFullYear();
+    const month = String(today.getMonth() + 1).padStart(2, '0');
+    fetch(`https://api.chess.com/pub/player/riko232323/games/${year}/${month}`)
+      .then(response => response.json())
+      .then(data => {
+        const totalGames = data.games.length;
+        const lostGames = data.games.filter(game =>
+          (game.white.username === 'riko232323' && (game.white.result != 'win')) ||
+          (game.black.username === 'riko232323' && game.black.result != 'win')
+        ).length;
+        document.getElementById('chessInfo').innerHTML = `${lostGames}/${totalGames}`;
+      })
+      .catch(error => console.log('Error:', error));
+  });
+  </script>
 </html>
